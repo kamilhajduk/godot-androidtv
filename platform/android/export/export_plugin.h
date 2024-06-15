@@ -65,7 +65,7 @@ struct LauncherIcon {
 	int dimensions = 0;
 };
 
-struct TvBanner {
+struct Banner {
 	const char *export_path;
 	int width = 0;
 	int height = 0;
@@ -176,15 +176,17 @@ class EditorExportPlatformAndroid : public EditorExportPlatform {
 
 	void _process_launcher_icons(const String &p_file_name, const Ref<Image> &p_source_image, int dimension, Vector<uint8_t> &p_data);
 
-	void _process_tv_banner(const String &p_file_name, const Ref<Image> &p_source_image, int width, int height, Vector<uint8_t> &p_data);
+	void _process_android_tv_banner(const String &p_file_name, const Ref<Image> &p_source_image, int width, int height, Vector<uint8_t> &p_data);
 
 	String load_splash_refs(Ref<Image> &splash_image, Ref<Image> &splash_bg_color_image);
 
-	void load_icon_refs(const Ref<EditorExportPreset> &p_preset, Ref<Image> &icon, Ref<Image> &icon_tv, Ref<Image> &tv_banner, Ref<Image> &foreground, Ref<Image> &background);
+	void load_icon_refs(const Ref<EditorExportPreset> &p_preset, Ref<Image> &icon, Ref<Image> &foreground, Ref<Image> &background);
+
+	void load_android_tv_refs(const Ref<EditorExportPreset> &p_preset, Ref<Image> &android_tv_launcher_icon, Ref<Image> &android_tv_banner);
 
 	void store_image(const LauncherIcon launcher_icon, const Vector<uint8_t> &data);
 
-	void store_image(const TvBanner tv_banner, const Vector<uint8_t> &data);
+	void store_image(const Banner android_tv_banner, const Vector<uint8_t> &data);
 
 	void store_image(const String &export_path, const Vector<uint8_t> &data);
 
@@ -193,10 +195,12 @@ class EditorExportPlatformAndroid : public EditorExportPlatform {
 			const Ref<Image> &splash_image,
 			const Ref<Image> &splash_bg_color_image,
 			const Ref<Image> &main_image,
-			const Ref<Image> &main_tv_image,
-			const Ref<Image> &tv_banner,
 			const Ref<Image> &foreground,
 			const Ref<Image> &background);
+
+	void _copy_android_tv_to_gradle_project(const Ref<EditorExportPreset> &p_preset,
+		const Ref<Image> &android_tv_launcher_icon,
+		const Ref<Image> &android_tv_banner);
 
 	static Vector<ABI> get_enabled_abis(const Ref<EditorExportPreset> &p_preset);
 
