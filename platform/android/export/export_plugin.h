@@ -65,6 +65,12 @@ struct LauncherIcon {
 	int dimensions = 0;
 };
 
+struct TvBanner {
+	const char *export_path;
+	int width = 0;
+	int height = 0;
+};
+
 class EditorExportPlatformAndroid : public EditorExportPlatform {
 	GDCLASS(EditorExportPlatformAndroid, EditorExportPlatform);
 
@@ -170,11 +176,15 @@ class EditorExportPlatformAndroid : public EditorExportPlatform {
 
 	void _process_launcher_icons(const String &p_file_name, const Ref<Image> &p_source_image, int dimension, Vector<uint8_t> &p_data);
 
+	void _process_tv_banner(const String &p_file_name, const Ref<Image> &p_source_image, int width, int height, Vector<uint8_t> &p_data);
+
 	String load_splash_refs(Ref<Image> &splash_image, Ref<Image> &splash_bg_color_image);
 
 	void load_icon_refs(const Ref<EditorExportPreset> &p_preset, Ref<Image> &icon, Ref<Image> &icon_tv, Ref<Image> &tv_banner, Ref<Image> &foreground, Ref<Image> &background);
 
 	void store_image(const LauncherIcon launcher_icon, const Vector<uint8_t> &data);
+
+	void store_image(const TvBanner tv_banner, const Vector<uint8_t> &data);
 
 	void store_image(const String &export_path, const Vector<uint8_t> &data);
 

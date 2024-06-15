@@ -241,13 +241,13 @@ static const LauncherIcon tv_launcher_icons[icon_densities_count] = {
 	{ "res/mipmap/icon.png", 320 }
 };
 
-static const LauncherIcon tv_banner_icons[icon_densities_count] = {
-	{ "res/mipmap-xxxhdpi-v4/banner.png", 640 },
-	{ "res/mipmap-xxhdpi-v4/banner.png", 480 },
-	{ "res/mipmap-xhdpi-v4/banner.png", 320 },
-	{ "res/mipmap-hdpi-v4/banner.png", 240 },
-	{ "res/mipmap-mdpi-v4/banner.png", 160 },
-	{ "res/mipmap/banner.png", 640 }
+static const TvBanner tv_banner_icons[icon_densities_count] = {
+	{ "res/mipmap-xxxhdpi-v4/banner.png", 640, 360 },
+	{ "res/mipmap-xxhdpi-v4/banner.png", 480, 270 },
+	{ "res/mipmap-xhdpi-v4/banner.png", 320, 180 },
+	{ "res/mipmap-hdpi-v4/banner.png", 240, 135 },
+	{ "res/mipmap-mdpi-v4/banner.png", 160, 90 },
+	{ "res/mipmap/banner.png", 640, 360 }
 };
 
 static const LauncherIcon launcher_adaptive_icon_foregrounds[icon_densities_count] = {
@@ -1553,6 +1553,25 @@ void EditorExportPlatformAndroid::_process_launcher_icons(const String &p_file_n
 	}
 }
 
+void EditorExportPlatformAndroid::_process_tv_banner(const String &p_file_name, const Ref<Image> &p_source_image, int width, int height, Vector<uint8_t> &p_data) {
+	Ref<Image> working_image = p_source_image;
+
+	if (p_source_image->get_width() != width || p_source_image->get_height() != height) {
+		working_image = p_source_image->duplicate();
+		working_image->resize(width, height, Image::Interpolation::INTERPOLATE_LANCZOS);
+	}
+
+	Vector<uint8_t> png_buffer;
+	Error err = PNGDriverCommon::image_to_png(working_image, png_buffer);
+	if (err == OK) {
+		p_data.resize(png_buffer.size());
+		memcpy(p_data.ptrw(), png_buffer.ptr(), p_data.size());
+	} else {
+		String err_str = String("Failed to convert resized banner (") + p_file_name + ") to png.";
+		WARN_PRINT(err_str.utf8().get_data());
+	}
+}
+
 String EditorExportPlatformAndroid::load_splash_refs(Ref<Image> &splash_image, Ref<Image> &splash_bg_color_image) {
 	bool scale_splash = GLOBAL_GET("application/boot_splash/fullsize");
 	bool apply_filter = GLOBAL_GET("application/boot_splash/use_filter");
@@ -1666,6 +1685,10 @@ void EditorExportPlatformAndroid::store_image(const LauncherIcon launcher_icon, 
 	store_image(launcher_icon.export_path, data);
 }
 
+void EditorExportPlatformAndroid::store_image(const TvBanner tv_banner, const Vector<uint8_t> &data) {
+	store_image(tv_banner.export_path, data);
+}
+
 void EditorExportPlatformAndroid::store_image(const String &export_path, const Vector<uint8_t> &data) {
 	String img_path = export_path.insert(0, "res://android/build/");
 	store_file_at_path(img_path, data);
@@ -1721,9 +1744,9 @@ void EditorExportPlatformAndroid::_copy_icons_to_gradle_project(const Ref<Editor
 		}
 
 		if (tv_banner.is_valid() && !tv_banner->is_empty()) {
-			print_verbose("Processing TV banner for dimension " + itos(tv_banner_icons[i].dimensions) + " into " + tv_banner_icons[i].export_path);
+			print_verbose("Processing TV banner for dimension " + itos(tv_banner_icons[i].width) + "x" + itos(tv_banner_icons[i].height) + " into " + tv_banner_icons[i].export_path);
 			Vector<uint8_t> data;
-			_process_launcher_icons(tv_banner_icons[i].export_path, tv_banner, tv_banner_icons[i].dimensions, data);
+			_process_tv_banner(tv_banner_icons[i].export_path, tv_banner, tv_banner_icons[i].width, tv_banner_icons[i].height, data);
 			store_image(tv_banner_icons[i], data);
 		}
 
@@ -3304,7 +3327,7 @@ Error EditorExportPlatformAndroid::export_project_helper(const Ref<EditorExportP
 				}
 				if (tv_banner.is_valid() && !tv_banner->is_empty()) {
 					if (file == tv_banner_icons[i].export_path) {
-						_process_launcher_icons(file, tv_banner, tv_banner_icons[i].dimensions, data);
+						_process_tv_banner(file, tv_banner, tv_banner_icons[i].width, tv_banner_icons[i].height, data);
 					}
 				}
 				if (foreground.is_valid() && !foreground->is_empty()) {
