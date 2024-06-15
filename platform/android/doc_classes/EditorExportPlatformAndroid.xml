@@ -84,6 +84,12 @@
 			User name for the release keystore file.
 			Can be overridden with the environment variable [code]GODOT_ANDROID_KEYSTORE_RELEASE_USER[/code].
 		</member>
+		<member name="android_tv/launcher_icon_320x320" type="String" setter="" getter="">
+			Application Android TV icon file. If left empty, it will fallback to [member ProjectSettings.application/config/icon].
+		</member>
+		<member name="android_tv/banner_640x360" type="String" setter="" getter="">
+			Application Android TV banner file.
+		</member>
 		<member name="launcher_icons/adaptive_background_432x432" type="String" setter="" getter="">
 			Background layer of the application adaptive icon file.
 		</member>
