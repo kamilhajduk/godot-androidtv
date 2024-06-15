@@ -172,7 +172,7 @@ class EditorExportPlatformAndroid : public EditorExportPlatform {
 
 	String load_splash_refs(Ref<Image> &splash_image, Ref<Image> &splash_bg_color_image);
 
-	void load_icon_refs(const Ref<EditorExportPreset> &p_preset, Ref<Image> &icon, Ref<Image> &foreground, Ref<Image> &background);
+	void load_icon_refs(const Ref<EditorExportPreset> &p_preset, Ref<Image> &icon, Ref<Image> &icon_tv, Ref<Image> &tv_banner, Ref<Image> &foreground, Ref<Image> &background);
 
 	void store_image(const LauncherIcon launcher_icon, const Vector<uint8_t> &data);
 
@@ -183,6 +183,8 @@ class EditorExportPlatformAndroid : public EditorExportPlatform {
 			const Ref<Image> &splash_image,
 			const Ref<Image> &splash_bg_color_image,
 			const Ref<Image> &main_image,
+			const Ref<Image> &main_tv_image,
+			const Ref<Image> &tv_banner,
 			const Ref<Image> &foreground,
 			const Ref<Image> &background);
 

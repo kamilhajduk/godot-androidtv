@@ -218,6 +218,8 @@ static const char *GDEXTENSION_LIBS_PATH = "res://android/build/libs/gdextension
 
 static const int icon_densities_count = 6;
 static const char *launcher_icon_option = PNAME("launcher_icons/main_192x192");
+static const char *launcher_tv_icon_option = PNAME("launcher_icons/tv_main_320x320");
+static const char *launcher_tv_banner_option = PNAME("launcher_icons/tv_banner_640x360");
 static const char *launcher_adaptive_icon_foreground_option = PNAME("launcher_icons/adaptive_foreground_432x432");
 static const char *launcher_adaptive_icon_background_option = PNAME("launcher_icons/adaptive_background_432x432");
 
@@ -228,6 +230,24 @@ static const LauncherIcon launcher_icons[icon_densities_count] = {
 	{ "res/mipmap-hdpi-v4/icon.png", 72 },
 	{ "res/mipmap-mdpi-v4/icon.png", 48 },
 	{ "res/mipmap/icon.png", 192 }
+};
+
+static const LauncherIcon tv_launcher_icons[icon_densities_count] = {
+	{ "res/mipmap-xxxhdpi-v4/icon.png", 320 },
+	{ "res/mipmap-xxhdpi-v4/icon.png", 240 },
+	{ "res/mipmap-xhdpi-v4/icon.png", 160 },
+	{ "res/mipmap-hdpi-v4/icon.png", 120 },
+	{ "res/mipmap-mdpi-v4/icon.png", 80 },
+	{ "res/mipmap/icon.png", 320 }
+};
+
+static const LauncherIcon tv_banner_icons[icon_densities_count] = {
+	{ "res/mipmap-xxxhdpi-v4/banner.png", 640 },
+	{ "res/mipmap-xxhdpi-v4/banner.png", 480 },
+	{ "res/mipmap-xhdpi-v4/banner.png", 320 },
+	{ "res/mipmap-hdpi-v4/banner.png", 240 },
+	{ "res/mipmap-mdpi-v4/banner.png", 160 },
+	{ "res/mipmap/banner.png", 640 }
 };
 
 static const LauncherIcon launcher_adaptive_icon_foregrounds[icon_densities_count] = {
@@ -1594,10 +1614,12 @@ String EditorExportPlatformAndroid::load_splash_refs(Ref<Image> &splash_image, R
 	return processed_splash_config_xml;
 }
 
-void EditorExportPlatformAndroid::load_icon_refs(const Ref<EditorExportPreset> &p_preset, Ref<Image> &icon, Ref<Image> &foreground, Ref<Image> &background) {
+void EditorExportPlatformAndroid::load_icon_refs(const Ref<EditorExportPreset> &p_preset, Ref<Image> &icon, Ref<Image> &icon_tv, Ref<Image> &tv_banner, Ref<Image> &foreground, Ref<Image> &background) {
 	String project_icon_path = GLOBAL_GET("application/config/icon");
 
 	icon.instantiate();
+	icon_tv.instantiate();
+	tv_banner.instantiate();
 	foreground.instantiate();
 	background.instantiate();
 
@@ -1607,6 +1629,21 @@ void EditorExportPlatformAndroid::load_icon_refs(const Ref<EditorExportPreset> &
 	if (path.is_empty() || ImageLoader::load_image(path, icon) != OK) {
 		print_verbose("- falling back to project icon: " + project_icon_path);
 		ImageLoader::load_image(project_icon_path, icon);
+	}
+
+	// TV icon: user selection -> project icon -> default.
+	path = static_cast<String>(p_preset->get(launcher_tv_icon_option)).strip_edges();
+	print_verbose("Loading TV icon from " + path);
+	if (path.is_empty() || ImageLoader::load_image(path, icon_tv) != OK) {
+		print_verbose("- falling back to project icon: " + project_icon_path);
+		ImageLoader::load_image(project_icon_path, icon_tv);
+	}
+
+	// TV Banner: user selection -> default.
+	path = static_cast<String>(p_preset->get(launcher_tv_banner_option)).strip_edges();
+	if (!path.is_empty()) {
+		print_verbose("Loading TV banner from " + path);
+		ImageLoader::load_image(path, tv_banner);
 	}
 
 	// Adaptive foreground: user selection -> regular icon (user selection -> project icon -> default).
@@ -1639,6 +1676,8 @@ void EditorExportPlatformAndroid::_copy_icons_to_gradle_project(const Ref<Editor
 		const Ref<Image> &splash_image,
 		const Ref<Image> &splash_bg_color_image,
 		const Ref<Image> &main_image,
+		const Ref<Image> &main_tv_image,
+		const Ref<Image> &tv_banner,
 		const Ref<Image> &foreground,
 		const Ref<Image> &background) {
 	// Store the splash configuration
@@ -1672,6 +1711,20 @@ void EditorExportPlatformAndroid::_copy_icons_to_gradle_project(const Ref<Editor
 			Vector<uint8_t> data;
 			_process_launcher_icons(launcher_icons[i].export_path, main_image, launcher_icons[i].dimensions, data);
 			store_image(launcher_icons[i], data);
+		}
+
+		if (main_tv_image.is_valid() && !main_tv_image->is_empty()) {
+			print_verbose("Processing TV launcher icon for dimension " + itos(tv_launcher_icons[i].dimensions) + " into " + tv_launcher_icons[i].export_path);
+			Vector<uint8_t> data;
+			_process_launcher_icons(tv_launcher_icons[i].export_path, main_tv_image, tv_launcher_icons[i].dimensions, data);
+			store_image(tv_launcher_icons[i], data);
+		}
+
+		if (tv_banner.is_valid() && !tv_banner->is_empty()) {
+			print_verbose("Processing TV banner for dimension " + itos(tv_banner_icons[i].dimensions) + " into " + tv_banner_icons[i].export_path);
+			Vector<uint8_t> data;
+			_process_launcher_icons(tv_banner_icons[i].export_path, tv_banner, tv_banner_icons[i].dimensions, data);
+			store_image(tv_banner_icons[i], data);
 		}
 
 		if (foreground.is_valid() && !foreground->is_empty()) {
@@ -1843,6 +1896,8 @@ void EditorExportPlatformAndroid::get_export_options(List<ExportOption> *r_optio
 	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "package/show_as_launcher_app"), false));
 
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, launcher_icon_option, PROPERTY_HINT_FILE, "*.png"), ""));
+	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, launcher_tv_icon_option, PROPERTY_HINT_FILE, "*.png"), ""));
+	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, launcher_tv_banner_option, PROPERTY_HINT_FILE, "*.png"), ""));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, launcher_adaptive_icon_foreground_option, PROPERTY_HINT_FILE, "*.png"), ""));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, launcher_adaptive_icon_background_option, PROPERTY_HINT_FILE, "*.png"), ""));
 
@@ -2845,10 +2900,12 @@ Error EditorExportPlatformAndroid::export_project_helper(const Ref<EditorExportP
 	String processed_splash_config_xml = load_splash_refs(splash_image, splash_bg_color_image);
 
 	Ref<Image> main_image;
+	Ref<Image> main_tv_image;
+	Ref<Image> tv_banner;
 	Ref<Image> foreground;
 	Ref<Image> background;
 
-	load_icon_refs(p_preset, main_image, foreground, background);
+	load_icon_refs(p_preset, main_image, main_tv_image, tv_banner, foreground, background);
 
 	Vector<uint8_t> command_line_flags;
 	// Write command line flags into the command_line_flags variable.
@@ -2909,7 +2966,7 @@ Error EditorExportPlatformAndroid::export_project_helper(const Ref<EditorExportP
 			add_message(EXPORT_MESSAGE_ERROR, TTR("Export"), TTR("Unable to overwrite res://android/build/res/*.xml files with project name."));
 		}
 		// Copies the project icon files into the appropriate Gradle project directory.
-		_copy_icons_to_gradle_project(p_preset, processed_splash_config_xml, splash_image, splash_bg_color_image, main_image, foreground, background);
+		_copy_icons_to_gradle_project(p_preset, processed_splash_config_xml, splash_image, splash_bg_color_image, main_image, main_tv_image, tv_banner, foreground, background);
 		// Write an AndroidManifest.xml file into the Gradle project directory.
 		_write_tmp_manifest(p_preset, p_give_internet, p_debug);
 
@@ -3238,6 +3295,16 @@ Error EditorExportPlatformAndroid::export_project_helper(const Ref<EditorExportP
 				if (main_image.is_valid() && !main_image->is_empty()) {
 					if (file == launcher_icons[i].export_path) {
 						_process_launcher_icons(file, main_image, launcher_icons[i].dimensions, data);
+					}
+				}
+				if (main_tv_image.is_valid() && !main_tv_image->is_empty()) {
+					if (file == tv_launcher_icons[i].export_path) {
+						_process_launcher_icons(file, main_tv_image, tv_launcher_icons[i].dimensions, data);
+					}
+				}
+				if (tv_banner.is_valid() && !tv_banner->is_empty()) {
+					if (file == tv_banner_icons[i].export_path) {
+						_process_launcher_icons(file, tv_banner, tv_banner_icons[i].dimensions, data);
 					}
 				}
 				if (foreground.is_valid() && !foreground->is_empty()) {

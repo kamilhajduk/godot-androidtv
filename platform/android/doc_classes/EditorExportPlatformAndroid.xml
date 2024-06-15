@@ -90,6 +90,12 @@
 		<member name="launcher_icons/adaptive_foreground_432x432" type="String" setter="" getter="">
 			Foreground layer of the application adaptive icon file.
 		</member>
+		<member name="launcher_icons/tv_banner_640x360" type="String" setter="" getter="">
+			Application TV banner file.
+		</member>
+		<member name="launcher_icons/tv_main_320x320" type="String" setter="" getter="">
+			Application TV icon file. If left empty, it will fallback to [member ProjectSettings.application/config/icon].
+		</member>
 		<member name="launcher_icons/main_192x192" type="String" setter="" getter="">
 			Application icon file. If left empty, it will fallback to [member ProjectSettings.application/config/icon].
 		</member>
