@@ -222,12 +222,12 @@ static const char *launcher_adaptive_icon_foreground_option = PNAME("launcher_ic
 static const char *launcher_adaptive_icon_background_option = PNAME("launcher_icons/adaptive_background_432x432");
 
 static const LauncherIcon launcher_icons[icon_densities_count] = {
-	{ "res/mipmap-xxxhdpi-v4/icon.png", 320 },
-	{ "res/mipmap-xxhdpi-v4/icon.png", 240 },
-	{ "res/mipmap-xhdpi-v4/icon.png", 160 },
-	{ "res/mipmap-hdpi-v4/icon.png", 120 },
-	{ "res/mipmap-mdpi-v4/icon.png", 80 },
-	{ "res/mipmap/icon.png", 320 }
+	{ "res/mipmap-xxxhdpi-v4/icon.png", 192 },
+	{ "res/mipmap-xxhdpi-v4/icon.png", 144 },
+	{ "res/mipmap-xhdpi-v4/icon.png", 96 },
+	{ "res/mipmap-hdpi-v4/icon.png", 72 },
+	{ "res/mipmap-mdpi-v4/icon.png", 48 },
+	{ "res/mipmap/icon.png", 192 }
 };
 
 static const LauncherIcon launcher_adaptive_icon_foregrounds[icon_densities_count] = {
