@@ -849,6 +849,30 @@ void EditorExportPlatformAndroid::_get_permissions(const Ref<EditorExportPreset>
 	}
 }
 
+String _get_android_tv_leanback_tag(bool android_tv_only) {
+	return  vformat("    <uses-feature android:name=\"android.software.leanback\" android:required=\"%s\" />\n", bool_to_string(android_tv_only));
+}
+
+String _get_android_tv_tags() {
+	return  "    <uses-feature android:name=\"android.hardware.bluetooth\" android:required=\"false\" />\n"
+			"    <uses-feature android:name=\"android.hardware.camera\" android:required=\"false\" />\n"
+			"    <uses-feature android:name=\"android.hardware.gamepad\" android:required=\"false\" />\n"
+			"    <uses-feature android:name=\"android.hardware.location\" android:required=\"false\" />\n"
+			"    <uses-feature android:name=\"android.hardware.location.gps\" android:required=\"false\" />\n"
+			"    <uses-feature android:name=\"android.hardware.location.network\" android:required=\"false\" />\n"
+			"    <uses-feature android:name=\"android.hardware.microphone\" android:required=\"false\" />\n"
+			"    <uses-feature android:name=\"android.hardware.nfc\" android:required=\"false\" />\n"
+			"    <uses-feature android:name=\"android.hardware.sensor.accelerometer\" android:required=\"false\" />\n"
+			"    <uses-feature android:name=\"android.hardware.sensor.gyroscope\" android:required=\"false\" />\n"
+			"    <uses-feature android:name=\"android.hardware.screen.landscape\" android:required=\"false\" />\n"
+			"    <uses-feature android:name=\"android.hardware.telephony\" android:required=\"false\" />\n"
+			"    <uses-feature android:name=\"android.hardware.touchscreen\" android:required=\"false\" />\n"
+			"    <uses-feature android:name=\"android.hardware.touchscreen.multitouch\" android:required=\"false\" />\n"
+    		"    <uses-feature android:name=\"android.hardware.touchscreen.multitouch.distinct\" android:required=\"false\" />\n"
+			"    <uses-feature android:name=\"android.software.vr.mode\" android:required=\"false\" />\n"
+			"    <uses-feature android:name=\"android.hardware.wifi\" android:required=\"false\" />\n";
+}
+
 void EditorExportPlatformAndroid::_write_tmp_manifest(const Ref<EditorExportPreset> &p_preset, bool p_give_internet, bool p_debug) {
 	print_verbose("Building temporary manifest...");
 	String manifest_text =
@@ -858,6 +882,13 @@ void EditorExportPlatformAndroid::_write_tmp_manifest(const Ref<EditorExportPres
 
 	manifest_text += _get_screen_sizes_tag(p_preset);
 	manifest_text += _get_gles_tag();
+
+	bool show_in_android_tv = p_preset->get("package/show_in_android_tv");
+	if (show_in_android_tv) {
+		bool android_tv_only = p_preset->get("android_tv/tv_only");
+		manifest_text += _get_android_tv_leanback_tag(android_tv_only);
+    	manifest_text += _get_android_tv_tags();
+	}
 
 	Vector<String> perms;
 	_get_permissions(p_preset, p_give_internet, perms);
@@ -1933,6 +1964,7 @@ void EditorExportPlatformAndroid::get_export_options(List<ExportOption> *r_optio
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, launcher_adaptive_icon_foreground_option, PROPERTY_HINT_FILE, "*.png"), ""));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, launcher_adaptive_icon_background_option, PROPERTY_HINT_FILE, "*.png"), ""));
 
+	r_options->push_back(ExportOption(PropertyInfo(Variant::BOOL, "android_tv/tv_only"), false));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, android_tv_launcher_icon_option, PROPERTY_HINT_FILE, "*.png"), ""));
 	r_options->push_back(ExportOption(PropertyInfo(Variant::STRING, android_tv_banner_option, PROPERTY_HINT_FILE, "*.png"), ""));
 
