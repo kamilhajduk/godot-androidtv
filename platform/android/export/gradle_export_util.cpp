@@ -269,7 +269,8 @@ String _get_activity_tag(const Ref<EditorExportPlatform> &p_export_platform, con
 
 	manifest_activity_text += "            <intent-filter>\n"
 							  "                <action android:name=\"android.intent.action.MAIN\" />\n"
-							  "                <category android:name=\"android.intent.category.DEFAULT\" />\n";
+							  "                <category android:name=\"android.intent.category.DEFAULT\" />\n"
+							  "                <category android:name=\"tv.ouya.intent.category.GAME\" />\n";
 
 	bool show_in_app_library = p_preset->get("package/show_in_app_library");
 	if (show_in_app_library) {

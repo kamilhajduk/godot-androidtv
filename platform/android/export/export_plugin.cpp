@@ -856,6 +856,7 @@ String _get_android_tv_leanback_tag(bool android_tv_only) {
 String _get_android_tv_tags() {
 	return  "    <uses-feature android:name=\"android.hardware.bluetooth\" android:required=\"false\" />\n"
 			"    <uses-feature android:name=\"android.hardware.camera\" android:required=\"false\" />\n"
+			"    <uses-feature android:name=\"android.hardware.camera.autofocus\" android:required=\"false\" />\n"
 			"    <uses-feature android:name=\"android.hardware.gamepad\" android:required=\"false\" />\n"
 			"    <uses-feature android:name=\"android.hardware.location\" android:required=\"false\" />\n"
 			"    <uses-feature android:name=\"android.hardware.location.gps\" android:required=\"false\" />\n"
