@@ -854,7 +854,9 @@ String _get_android_tv_leanback_tag(bool android_tv_only) {
 }
 
 String _get_android_tv_tags() {
-	return  "    <uses-feature android:name=\"android.hardware.bluetooth\" android:required=\"false\" />\n"
+	return  "    <uses-feature android:name=\"android.hardware.touchscreen\" android:required=\"false\" />\n";
+	/*
+			"    <uses-feature android:name=\"android.hardware.bluetooth\" android:required=\"false\" />\n"
 			"    <uses-feature android:name=\"android.hardware.camera\" android:required=\"false\" />\n"
 			"    <uses-feature android:name=\"android.hardware.camera.autofocus\" android:required=\"false\" />\n"
 			"    <uses-feature android:name=\"android.hardware.gamepad\" android:required=\"false\" />\n"
@@ -867,11 +869,11 @@ String _get_android_tv_tags() {
 			"    <uses-feature android:name=\"android.hardware.sensor.gyroscope\" android:required=\"false\" />\n"
 			"    <uses-feature android:name=\"android.hardware.screen.landscape\" android:required=\"false\" />\n"
 			"    <uses-feature android:name=\"android.hardware.telephony\" android:required=\"false\" />\n"
-			"    <uses-feature android:name=\"android.hardware.touchscreen\" android:required=\"false\" />\n"
 			"    <uses-feature android:name=\"android.hardware.touchscreen.multitouch\" android:required=\"false\" />\n"
     		"    <uses-feature android:name=\"android.hardware.touchscreen.multitouch.distinct\" android:required=\"false\" />\n"
 			"    <uses-feature android:name=\"android.software.vr.mode\" android:required=\"false\" />\n"
 			"    <uses-feature android:name=\"android.hardware.wifi\" android:required=\"false\" />\n";
+	*/
 }
 
 void EditorExportPlatformAndroid::_write_tmp_manifest(const Ref<EditorExportPreset> &p_preset, bool p_give_internet, bool p_debug) {
