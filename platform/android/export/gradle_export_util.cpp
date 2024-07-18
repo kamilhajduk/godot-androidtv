@@ -316,13 +316,20 @@ String _get_application_tag(const Ref<EditorExportPlatform> &p_export_platform, 
 			"        android:hasFragileUserData=\"%s\"\n"
 			"        android:requestLegacyExternalStorage=\"%s\"\n"
 			"        tools:replace=\"android:allowBackup,android:appCategory,android:isGame,android:hasFragileUserData,android:requestLegacyExternalStorage\"\n"
-			"        tools:ignore=\"GoogleAppIndexingWarning\">\n\n",
+			"        tools:ignore=\"GoogleAppIndexingWarning\"",
 			bool_to_string(p_preset->get("user_data_backup/allow")),
 			_get_app_category_label(app_category_index),
 			bool_to_string(is_game),
 			bool_to_string(p_preset->get("package/retain_data_on_uninstall")),
 			bool_to_string(p_has_read_write_storage_permission));
 
+	bool show_in_android_tv = p_preset->get("package/show_in_android_tv");
+	if (show_in_android_tv) {
+		manifest_application_text += "\n        android:banner=\"@mipmap/banner\"";
+	}
+
+	manifest_application_text += ">\n\n";
+	
 	Vector<Ref<EditorExportPlugin>> export_plugins = EditorExport::get_singleton()->get_export_plugins();
 	for (int i = 0; i < export_plugins.size(); i++) {
 		if (export_plugins[i]->supports_platform(p_export_platform)) {
